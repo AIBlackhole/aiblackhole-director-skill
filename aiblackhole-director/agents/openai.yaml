@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Blackhole Director"
+  short_description: "Use and troubleshoot the online AI Blackhole panorama director."
+  default_prompt: "Use $aiblackhole-director to help me open, use, or troubleshoot the online panorama director."
