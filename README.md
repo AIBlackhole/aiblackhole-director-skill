@@ -5,7 +5,7 @@ This repository contains local AI Blackhole Studio director skills for Codex and
 The skill is designed for local use: it copies a local image into a temporary local director session, starts a local static server, and opens a URL such as:
 
 ```text
-http://127.0.0.1:8766/panorama-viewer.html?image=imports/imported-image.png
+http://127.0.0.1:<port>/panorama-viewer.html?image=imports/imported-image.png
 ```
 
 The Codex skill is:
@@ -108,7 +108,7 @@ python aiblackhole-director-cc/scripts/local_import.py "C:/path/to/image.png" --
 The helper copies the image into a local director session and opens a URL like:
 
 ```text
-http://127.0.0.1:8766/panorama-viewer.html?image=imports/imported-image.png
+http://127.0.0.1:<port>/panorama-viewer.html?image=imports/imported-image.png
 ```
 
 This does not upload the image to the public website.
