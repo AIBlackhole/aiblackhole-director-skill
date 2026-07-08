@@ -1,4 +1,4 @@
 interface:
   display_name: "AI Blackhole Director"
-  short_description: "Deploy bundled local director sessions and import panorama images."
-  default_prompt: "Use $aiblackhole-director to deploy the bundled local director and open a local panorama image."
+  short_description: "Open local director sessions and import panorama images."
+  default_prompt: "Use $aiblackhole-director to open the local director and load a local panorama image."

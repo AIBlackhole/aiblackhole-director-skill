@@ -1,6 +1,6 @@
 ---
 name: aiblackhole-director
-description: 'Use when Codex needs to help users create, deploy, open, use, explain, test, or customize local AI Blackhole Studio panorama director sessions, including bundled local deployment, local image import, panorama image viewing, flat image director mode, local static server startup, character placement, occluders, objects, screenshots, shortcuts, and user workflow guidance.'
+description: 'Use when Codex needs to help users create, open, use, explain, test, or customize local AI Blackhole Studio panorama director sessions, including local image import, panorama image viewing, flat image director mode, local static server startup, character placement, occluders, objects, screenshots, shortcuts, and user workflow guidance.'
 ---
 
 # AI Blackhole Director
@@ -15,7 +15,7 @@ The default workflow is local:
 2. Start a local static server.
 3. Open the generated `http://127.0.0.1:<port>/panorama-viewer.html?image=...` URL.
 
-The skill includes the director package at `assets/panorama-director-deploy-v1.2.zip`. If no `--web-dir` is supplied, the helper can extract and use this bundled package.
+If no `--web-dir` is supplied, the helper uses the default local director files.
 
 Do not use `https://aiblackhole.net/panorama-viewer` as the default path for this skill. The public site can remain a diagnostic or sharing reference, but local deployment is the primary mode.
 
@@ -31,6 +31,17 @@ Do not use `https://aiblackhole.net/panorama-viewer` as the default path for thi
 5. For feature guidance, read `references/feature-guide.md`.
 6. For local server, asset, image, route, or browser issues, read `references/troubleshooting.md`.
 7. Keep instructions practical and user-facing. Prefer the local helper for automatic image opening.
+
+## 使用说明
+
+当用户要求查看使用说明时，只显示下面两条示例：
+
+```text
+打开导演台
+打开这张图片：C:\...\image.png
+```
+
+不要在简短使用说明里加入截图、角色、遮挡物或图片加载排查示例。
 
 ## Local Image Import
 
