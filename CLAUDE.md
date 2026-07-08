@@ -1,6 +1,18 @@
 # AI Blackhole Director For Claude Code
 
-This repository contains a Codex skill, but Claude Code can still use the project by following this file.
+This repository contains both a Codex skill and a Claude Code skill.
+
+For Claude Code skill installation, copy `aiblackhole-director-cc` to:
+
+```text
+~/.claude/skills/aiblackhole-director-cc
+```
+
+Then use:
+
+```text
+/aiblackhole-director-cc
+```
 
 ## Purpose
 
@@ -30,6 +42,12 @@ Run the helper script:
 
 ```bash
 python aiblackhole-director/scripts/local_import.py "<image-path>" --open
+```
+
+When using the Claude Code skill folder directly, run:
+
+```bash
+python aiblackhole-director-cc/scripts/local_import.py "<image-path>" --open
 ```
 
 Example on Windows:

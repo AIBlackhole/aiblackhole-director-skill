@@ -1,8 +1,9 @@
 # Install And Use AI Blackhole Director
 
-This repository works in two ways:
+This repository works in three ways:
 
 - Codex users can install `aiblackhole-director` as a Codex skill.
+- Claude Code users can install `aiblackhole-director-cc` as a Claude Code skill.
 - Claude Code and other agents can use the same bundled local director through the helper scripts.
 
 The director web app is bundled in:
@@ -81,7 +82,35 @@ Use $aiblackhole-director to open this local panorama image.
 
 ## Claude Code Use
 
-Open this repository in Claude Code. It should read `CLAUDE.md`.
+For skill installation, copy this folder:
+
+```text
+aiblackhole-director-cc
+```
+
+into your Claude Code skills directory.
+
+macOS / Linux:
+
+```text
+~/.claude/skills/aiblackhole-director-cc
+```
+
+Windows:
+
+```text
+C:\Users\<your-name>\.claude\skills\aiblackhole-director-cc
+```
+
+Restart Claude Code.
+
+Then ask:
+
+```text
+Use /aiblackhole-director-cc to open this local panorama image.
+```
+
+You can also open this repository in Claude Code. It should read `CLAUDE.md`.
 
 You can also ask Claude Code:
 
@@ -95,6 +124,12 @@ Import an image:
 
 ```bash
 python aiblackhole-director/scripts/local_import.py "C:/path/to/image.png" --open
+```
+
+Claude Code skill helper:
+
+```bash
+python aiblackhole-director-cc/scripts/local_import.py "C:/path/to/image.png" --open
 ```
 
 Deploy/open without an image:
