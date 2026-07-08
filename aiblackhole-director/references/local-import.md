@@ -4,7 +4,7 @@ Use this reference when the user wants Codex to open a local image in the direct
 
 ## Why This Exists
 
-Browsers do not allow a webpage to read arbitrary local file paths. The public site at `https://aiblackhole.net/panorama-viewer` still requires the user to choose or drag a file.
+Browsers do not allow a webpage to read arbitrary local file paths. This skill avoids browser file-picker limits by creating a local static session that serves the selected image as a local URL.
 
 For automatic local image import, create a local director session:
 
@@ -44,4 +44,4 @@ The script prints JSON with:
 
 ## Important Boundary
 
-This does not upload the user's image to the public website. It creates a local session that behaves like the director page and loads the copied image by local URL.
+This does not upload the user's image to any public website. It creates a local session that behaves like the director page and loads the copied image by local URL.
