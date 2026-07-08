@@ -1,4 +1,4 @@
 interface:
   display_name: "AI Blackhole Director"
-  short_description: "Use and troubleshoot the online AI Blackhole panorama director."
-  default_prompt: "Use $aiblackhole-director to help me open, use, or troubleshoot the online panorama director."
+  short_description: "Use, troubleshoot, and locally import images into AI Blackhole Director."
+  default_prompt: "Use $aiblackhole-director to help me open, use, troubleshoot, or locally import an image into the panorama director."

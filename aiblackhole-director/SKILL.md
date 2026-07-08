@@ -1,6 +1,6 @@
 ---
 name: aiblackhole-director
-description: Use when Codex needs to help users open, use, explain, test, troubleshoot, or customize the online AI Blackhole Studio panorama director at https://aiblackhole.net/panorama-viewer, including panorama image viewing, flat image director mode, character placement, occluders, objects, screenshots, shortcuts, Cloudflare Pages/domain troubleshooting, and user workflow guidance.
+description: Use when Codex needs to help users open, use, explain, test, troubleshoot, locally import images into, or customize the AI Blackhole Studio panorama director at https://aiblackhole.net/panorama-viewer, including panorama image viewing, flat image director mode, local image sessions, character placement, occluders, objects, screenshots, shortcuts, Cloudflare Pages/domain troubleshooting, and user workflow guidance.
 ---
 
 # AI Blackhole Director
@@ -24,8 +24,9 @@ Prefer the public website. Do not assume users need local installation unless th
    - troubleshoot a loading or browser issue
    - customize or redeploy the site
 3. For feature guidance, read `references/feature-guide.md`.
-4. For loading, domain, DNS, Cloudflare Pages, route, or HTTPS issues, read `references/troubleshooting.md`.
-5. Keep instructions practical and user-facing. Prefer steps that work on the online site.
+4. For automatic local image import, read `references/local-import.md` and use `scripts/local_import.py`.
+5. For loading, domain, DNS, Cloudflare Pages, route, or HTTPS issues, read `references/troubleshooting.md`.
+6. Keep instructions practical and user-facing. Prefer steps that work on the online site unless a local file must be opened automatically.
 
 ## Browser Checks
 
@@ -43,6 +44,16 @@ If the custom domain fails, test the Cloudflare Pages fallback if known:
 https://panorama-director.pages.dev/panorama-viewer
 
 Only use fallback URLs for diagnosis unless the user asks to switch links.
+
+## Local Image Import
+
+When the user gives a local image path and wants it opened automatically, use the local import helper instead of trying to force-upload into the public site:
+
+```bash
+python <skill-dir>/scripts/local_import.py "<image-path>" --web-dir "<director-web-dir>" --open
+```
+
+Use the helper output URL to open the local session. Explain that the image is copied into a temporary local web session and is not uploaded to the public website.
 
 ## Do Not
 

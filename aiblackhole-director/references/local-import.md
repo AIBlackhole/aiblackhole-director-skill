@@ -1,0 +1,47 @@
+# Local Import
+
+Use this reference when the user wants Codex to open a local image in the director without manually using the browser file picker.
+
+## Why This Exists
+
+Browsers do not allow a webpage to read arbitrary local file paths. The public site at `https://aiblackhole.net/panorama-viewer` still requires the user to choose or drag a file.
+
+For automatic local image import, create a local director session:
+
+1. Copy the director web files into a temporary local session.
+2. Copy the user's image into that session under `imports/`.
+3. Start a local static server.
+4. Open `panorama-viewer.html?image=imports/<image-file>`.
+
+## Script
+
+Run:
+
+```bash
+python <skill-dir>/scripts/local_import.py "C:/path/to/image.png" --web-dir "C:/path/to/director/web" --open
+```
+
+If `--web-dir` is omitted, the script searches common project folders:
+
+- `output/panorama-director-v1.2/web`
+- `output`
+- current directory
+
+The web directory must contain:
+
+- `panorama-viewer.html`
+- `panorama-director.js`
+
+## Expected Output
+
+The script prints JSON with:
+
+- `url`: local URL to open
+- `pid`: local server process ID
+- `web_dir`: generated session web folder
+- `imported_image`: copied image path
+- `stop_hint`: command to stop the server
+
+## Important Boundary
+
+This does not upload the user's image to the public website. It creates a local session that behaves like the director page and loads the copied image by local URL.

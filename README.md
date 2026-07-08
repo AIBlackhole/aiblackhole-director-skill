@@ -45,3 +45,20 @@ Use $aiblackhole-director to troubleshoot why the online director does not load.
 - Guiding users through panorama and flat-image modes
 - Using characters, objects, occluders, screenshots, shortcuts, and batch selection
 - Troubleshooting domain, Cloudflare Pages, browser, and loading issues
+- Creating a local import session for local image files when browser upload automation is blocked
+
+## Local Image Import
+
+For local files, use the helper script:
+
+```text
+python aiblackhole-director/scripts/local_import.py "C:/path/to/image.png" --web-dir "C:/path/to/director/web" --open
+```
+
+The helper copies the image into a local director session and opens a URL like:
+
+```text
+http://127.0.0.1:8766/panorama-viewer.html?image=imports/imported-image.png
+```
+
+This does not upload the image to the public website.
