@@ -58,12 +58,6 @@ Restart Claude Code after copying the folder.
 
 ## Use
 
-For general installation and startup instructions, see:
-
-```text
-INSTALL.md
-```
-
 Ask Codex:
 
 ```text
@@ -90,7 +84,7 @@ Use /aiblackhole-director-cc to open this local panorama image in the director.
 
 ## What This Skill Covers
 
-- Deploying the bundled director package locally
+- Opening local director sessions
 - Creating local director sessions
 - Importing local image files without browser file-picker automation
 - Explaining director-stage workflows
@@ -125,16 +119,10 @@ To open the local director without importing an image:
 python aiblackhole-director/scripts/local_import.py --open
 ```
 
-`--web-dir` is optional. If omitted, the helper first checks common local folders, then falls back to the bundled deployment package in `assets/`.
-
-Windows users can also run:
+For Claude Code:
 
 ```text
-run-director-windows.bat "C:\path\to\panorama.png"
+python aiblackhole-director-cc/scripts/local_import.py --open
 ```
 
-macOS / Linux users can run:
-
-```bash
-./run-director-macos-linux.sh "/path/to/panorama.png"
-```
+`--web-dir` is optional. If omitted, the helper first checks common local folders, then uses the default local director files.
