@@ -1,6 +1,6 @@
 ---
 name: aiblackhole-director
-description: Use when Codex needs to help users create, deploy, open, use, explain, test, or customize local AI Blackhole Studio panorama director sessions, including bundled local deployment, local image import, panorama image viewing, flat image director mode, local static server startup, character placement, occluders, objects, screenshots, shortcuts, and user workflow guidance.
+description: 'Use when Codex needs to help users create, deploy, open, use, explain, test, or customize local AI Blackhole Studio panorama director sessions, including bundled local deployment, local image import, panorama image viewing, flat image director mode, local static server startup, character placement, occluders, objects, screenshots, shortcuts, and user workflow guidance.'
 ---
 
 # AI Blackhole Director
