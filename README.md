@@ -125,5 +125,4 @@ For Claude Code:
 python aiblackhole-director-cc/scripts/local_import.py --open
 ```
 
-`--web-dir` is optional. If omitted, the helper first checks common local folders, then uses the default local director files.
 
