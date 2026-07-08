@@ -1,6 +1,6 @@
 # AI Blackhole Director Skill
 
-This repository contains the `aiblackhole-director` Codex skill for helping users create, open, use, test, and troubleshoot local AI Blackhole Studio panorama director sessions.
+This repository contains the `aiblackhole-director` Codex skill for helping users create, open, use, and test local AI Blackhole Studio panorama director sessions.
 
 The skill is designed for local use: it copies a local image into a temporary local director session, starts a local static server, and opens a URL such as:
 
@@ -60,7 +60,6 @@ Use $aiblackhole-director to open this local panorama image in the director.
 - Explaining director-stage workflows
 - Guiding users through panorama and flat-image modes
 - Using characters, objects, occluders, screenshots, shortcuts, and batch selection
-- Troubleshooting local static server, browser, asset, and loading issues
 
 ## Local Image Import
 

@@ -1,6 +1,6 @@
 ---
 name: aiblackhole-director
-description: Use when Codex needs to help users create, deploy, open, use, explain, test, troubleshoot, or customize local AI Blackhole Studio panorama director sessions, including bundled local deployment, local image import, panorama image viewing, flat image director mode, local static server startup, character placement, occluders, objects, screenshots, shortcuts, and user workflow guidance.
+description: Use when Codex needs to help users create, deploy, open, use, explain, test, or customize local AI Blackhole Studio panorama director sessions, including bundled local deployment, local image import, panorama image viewing, flat image director mode, local static server startup, character placement, occluders, objects, screenshots, shortcuts, and user workflow guidance.
 ---
 
 # AI Blackhole Director
@@ -27,7 +27,6 @@ Do not use `https://aiblackhole.net/panorama-viewer` as the default path for thi
 4. Identify the user's next task:
    - use the director
    - learn a feature
-   - troubleshoot a local loading or browser issue
    - customize or package the local director files
 5. For feature guidance, read `references/feature-guide.md`.
 6. For local server, asset, image, route, or browser issues, read `references/troubleshooting.md`.
