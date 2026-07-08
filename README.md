@@ -34,6 +34,12 @@ Restart Codex after copying the folder.
 
 ## Use
 
+For general installation and startup instructions, see:
+
+```text
+INSTALL.md
+```
+
 Ask Codex:
 
 ```text
@@ -79,3 +85,15 @@ python aiblackhole-director/scripts/local_import.py --open
 ```
 
 `--web-dir` is optional. If omitted, the helper first checks common local folders, then falls back to the bundled deployment package in `assets/`.
+
+Windows users can also run:
+
+```text
+run-director-windows.bat "C:\path\to\panorama.png"
+```
+
+macOS / Linux users can run:
+
+```bash
+./run-director-macos-linux.sh "/path/to/panorama.png"
+```

@@ -10,6 +10,22 @@ Do not try to upload local files into `https://aiblackhole.net/panorama-viewer`.
 
 ## Main Command
 
+Prefer the root helper scripts for ordinary use.
+
+Windows:
+
+```text
+run-director-windows.bat "C:\path\to\panorama.png"
+```
+
+macOS / Linux:
+
+```bash
+./run-director-macos-linux.sh "/path/to/panorama.png"
+```
+
+The direct Python helper is:
+
 Run the helper script:
 
 ```bash
