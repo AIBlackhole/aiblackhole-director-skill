@@ -5,17 +5,18 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import shutil
 import socket
 import subprocess
 import sys
 import time
 import webbrowser
+import zipfile
 from pathlib import Path
 
 
 REQUIRED_FILES = ("panorama-viewer.html", "panorama-director.js")
+BUNDLED_PACKAGE = "panorama-director-deploy-v1.2.zip"
 
 
 def candidate_web_dirs(cwd: Path) -> list[Path]:
@@ -30,21 +31,56 @@ def is_web_dir(path: Path) -> bool:
     return path.is_dir() and all((path / name).is_file() for name in REQUIRED_FILES)
 
 
-def resolve_web_dir(cwd: Path, explicit: str | None) -> Path:
+def find_web_dir(root: Path) -> Path | None:
+    if is_web_dir(root):
+        return root
+    for path in root.rglob("panorama-viewer.html"):
+        candidate = path.parent
+        if is_web_dir(candidate):
+            return candidate
+    return None
+
+
+def safe_extract(zip_path: Path, destination: Path) -> None:
+    destination.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path) as archive:
+        for member in archive.infolist():
+            target = (destination / member.filename).resolve()
+            if destination.resolve() not in target.parents and target != destination.resolve():
+                raise SystemExit(f"Unsafe path in bundled package: {member.filename}")
+        archive.extractall(destination)
+
+
+def bundled_package_path() -> Path | None:
+    skill_dir = Path(__file__).resolve().parents[1]
+    candidate = skill_dir / "assets" / BUNDLED_PACKAGE
+    return candidate if candidate.is_file() else None
+
+
+def resolve_web_dir(cwd: Path, explicit: str | None, session_dir: Path) -> tuple[Path, str]:
     if explicit:
         path = Path(explicit).expanduser().resolve()
         if not is_web_dir(path):
             raise SystemExit(f"Web directory is missing required files: {path}")
-        return path
+        return path, "explicit-web-dir"
 
     for path in candidate_web_dirs(cwd):
         if is_web_dir(path):
-            return path.resolve()
+            return path.resolve(), "workspace-web-dir"
+
+    package = bundled_package_path()
+    if package:
+        extract_dir = session_dir / "bundled-package"
+        safe_extract(package, extract_dir)
+        bundled_web_dir = find_web_dir(extract_dir)
+        if bundled_web_dir:
+            return bundled_web_dir.resolve(), "bundled-package"
+        raise SystemExit(f"Bundled package does not contain required web files: {package}")
 
     checked = "\n".join(str(path) for path in candidate_web_dirs(cwd))
     raise SystemExit(
-        "Could not find a local director web directory. Pass --web-dir with a folder "
-        "that contains panorama-viewer.html and panorama-director.js.\nChecked:\n"
+        "Could not find a local director web directory or bundled package. Pass --web-dir "
+        "with a folder that contains panorama-viewer.html and panorama-director.js.\nChecked:\n"
         f"{checked}"
     )
 
@@ -94,11 +130,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Open a local image in a local AI Blackhole Director session."
     )
-    parser.add_argument("image", help="Local image file to import.")
+    parser.add_argument("image", nargs="?", help="Optional local image file to import.")
     parser.add_argument(
         "--web-dir",
         help="Folder containing panorama-viewer.html and panorama-director.js. "
-        "Defaults to common Project01 output folders.",
+        "Defaults to common Project01 output folders, then the bundled director package.",
     )
     parser.add_argument("--port", type=int, default=8766, help="Preferred local port.")
     parser.add_argument(
@@ -109,11 +145,10 @@ def main() -> int:
     args = parser.parse_args()
 
     cwd = Path.cwd()
-    image = Path(args.image).expanduser().resolve()
-    if not image.is_file():
+    image = Path(args.image).expanduser().resolve() if args.image else None
+    if image and not image.is_file():
         raise SystemExit(f"Image does not exist: {image}")
 
-    web_source = resolve_web_dir(cwd, args.web_dir)
     session_root = (
         Path(args.session_root).expanduser().resolve()
         if args.session_root
@@ -123,13 +158,17 @@ def main() -> int:
 
     session_dir = session_root / time.strftime("session-%Y%m%d-%H%M%S")
     web_dir = session_dir / "web"
+    web_source, source_kind = resolve_web_dir(cwd, args.web_dir, session_dir)
     copy_web_tree(web_source, web_dir)
 
-    imports_dir = web_dir / "imports"
-    imports_dir.mkdir(parents=True, exist_ok=True)
-    image_name = imported_name(image)
-    imported_image = imports_dir / image_name
-    shutil.copy2(image, imported_image)
+    imported_image = None
+    image_name = None
+    if image:
+        imports_dir = web_dir / "imports"
+        imports_dir.mkdir(parents=True, exist_ok=True)
+        image_name = imported_name(image)
+        imported_image = imports_dir / image_name
+        shutil.copy2(image, imported_image)
 
     port = reserve_port(args.port)
     logs_dir = cwd / "logs"
@@ -138,8 +177,12 @@ def main() -> int:
     if process.poll() is not None:
         raise SystemExit(f"Local server failed to start on port {port}")
 
-    image_url = f"imports/{image_name}"
-    url = f"http://127.0.0.1:{port}/panorama-viewer.html?image={image_url}"
+    image_url = f"imports/{image_name}" if image_name else ""
+    url = (
+        f"http://127.0.0.1:{port}/panorama-viewer.html?image={image_url}"
+        if image_url
+        else f"http://127.0.0.1:{port}/panorama-viewer.html"
+    )
     pid_path = logs_dir / f"aiblackhole-director-local-{port}.pid"
     pid_path.write_text(str(process.pid), encoding="utf-8")
 
@@ -147,8 +190,9 @@ def main() -> int:
         "url": url,
         "pid": process.pid,
         "port": port,
+        "source": source_kind,
         "web_dir": str(web_dir),
-        "imported_image": str(imported_image),
+        "imported_image": str(imported_image) if imported_image else None,
         "stop_hint": f"Stop-Process -Id {process.pid}",
     }
 

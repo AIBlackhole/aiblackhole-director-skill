@@ -13,12 +13,24 @@ For automatic local image import, create a local director session:
 3. Start a local static server.
 4. Open `panorama-viewer.html?image=imports/<image-file>`.
 
+The skill includes a bundled director deployment package:
+
+```text
+assets/panorama-director-deploy-v1.2.zip
+```
+
 ## Script
 
 Run:
 
 ```bash
-python <skill-dir>/scripts/local_import.py "C:/path/to/image.png" --web-dir "C:/path/to/director/web" --open
+python <skill-dir>/scripts/local_import.py "C:/path/to/image.png" --open
+```
+
+To deploy/open the local director without importing an image:
+
+```bash
+python <skill-dir>/scripts/local_import.py --open
 ```
 
 If `--web-dir` is omitted, the script searches common project folders:
@@ -26,6 +38,8 @@ If `--web-dir` is omitted, the script searches common project folders:
 - `output/panorama-director-v1.2/web`
 - `output`
 - current directory
+
+If none are found, it extracts and uses `assets/panorama-director-deploy-v1.2.zip`.
 
 The web directory must contain:
 

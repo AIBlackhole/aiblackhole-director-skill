@@ -13,13 +13,19 @@ Do not try to upload local files into `https://aiblackhole.net/panorama-viewer`.
 Run the helper script:
 
 ```bash
-python aiblackhole-director/scripts/local_import.py "<image-path>" --web-dir "<director-web-dir>" --open
+python aiblackhole-director/scripts/local_import.py "<image-path>" --open
 ```
 
 Example on Windows:
 
 ```bash
-python aiblackhole-director/scripts/local_import.py "C:/Users/Haku/Pictures/panorama.png" --web-dir "C:/Users/Haku/Documents/Project01/output/panorama-director-v1.2/web" --open
+python aiblackhole-director/scripts/local_import.py "C:/Users/Haku/Pictures/panorama.png" --open
+```
+
+To deploy and open the director without importing an image:
+
+```bash
+python aiblackhole-director/scripts/local_import.py --open
 ```
 
 The helper will:
@@ -36,7 +42,13 @@ http://127.0.0.1:8766/panorama-viewer.html?image=imports/imported-image.png
 
 ## Required Director Web Directory
 
-The `--web-dir` folder must contain:
+The skill includes a bundled director package:
+
+```text
+aiblackhole-director/assets/panorama-director-deploy-v1.2.zip
+```
+
+`--web-dir` is optional. If a custom `--web-dir` is provided, that folder must contain:
 
 ```text
 panorama-viewer.html
@@ -51,6 +63,8 @@ output/panorama-director-v1.2/web
 output
 .
 ```
+
+If none are found, it extracts and uses the bundled package from `assets/`.
 
 ## Verification
 

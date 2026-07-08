@@ -1,6 +1,6 @@
 ---
 name: aiblackhole-director
-description: Use when Codex needs to help users create, open, use, explain, test, troubleshoot, or customize local AI Blackhole Studio panorama director sessions, including local image import, panorama image viewing, flat image director mode, local static server startup, character placement, occluders, objects, screenshots, shortcuts, and user workflow guidance.
+description: Use when Codex needs to help users create, deploy, open, use, explain, test, troubleshoot, or customize local AI Blackhole Studio panorama director sessions, including bundled local deployment, local image import, panorama image viewing, flat image director mode, local static server startup, character placement, occluders, objects, screenshots, shortcuts, and user workflow guidance.
 ---
 
 # AI Blackhole Director
@@ -14,6 +14,8 @@ The default workflow is local:
 1. Use `scripts/local_import.py` to copy a local image into a temporary local director session.
 2. Start a local static server.
 3. Open the generated `http://127.0.0.1:<port>/panorama-viewer.html?image=...` URL.
+
+The skill includes the director package at `assets/panorama-director-deploy-v1.2.zip`. If no `--web-dir` is supplied, the helper can extract and use this bundled package.
 
 Do not use `https://aiblackhole.net/panorama-viewer` as the default path for this skill. The public site can remain a diagnostic or sharing reference, but local deployment is the primary mode.
 
@@ -36,8 +38,16 @@ Do not use `https://aiblackhole.net/panorama-viewer` as the default path for thi
 When the user gives a local image path and wants it opened automatically, use:
 
 ```bash
-python <skill-dir>/scripts/local_import.py "<image-path>" --web-dir "<director-web-dir>" --open
+python <skill-dir>/scripts/local_import.py "<image-path>" --open
 ```
+
+When the user only wants to deploy/open the local director without an image, use:
+
+```bash
+python <skill-dir>/scripts/local_import.py --open
+```
+
+Pass `--web-dir` only when the user explicitly wants to use a custom director web folder.
 
 Use the helper output URL to open the local session. Explain that the image is copied into a temporary local web session and is not uploaded to any public website.
 

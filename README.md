@@ -8,6 +8,12 @@ The skill is designed for local use: it copies a local image into a temporary lo
 http://127.0.0.1:8766/panorama-viewer.html?image=imports/imported-image.png
 ```
 
+The director web app is bundled inside the skill:
+
+```text
+aiblackhole-director/assets/panorama-director-deploy-v1.2.zip
+```
+
 ## Install
 
 Copy the `aiblackhole-director` folder into your Codex skills directory.
@@ -42,6 +48,7 @@ Use $aiblackhole-director to open this local panorama image in the director.
 
 ## What This Skill Covers
 
+- Deploying the bundled director package locally
 - Creating local director sessions
 - Importing local image files without browser file-picker automation
 - Explaining director-stage workflows
@@ -54,7 +61,7 @@ Use $aiblackhole-director to open this local panorama image in the director.
 For local files, use the helper script:
 
 ```text
-python aiblackhole-director/scripts/local_import.py "C:/path/to/image.png" --web-dir "C:/path/to/director/web" --open
+python aiblackhole-director/scripts/local_import.py "C:/path/to/image.png" --open
 ```
 
 The helper copies the image into a local director session and opens a URL like:
@@ -64,3 +71,11 @@ http://127.0.0.1:8766/panorama-viewer.html?image=imports/imported-image.png
 ```
 
 This does not upload the image to the public website.
+
+To open the local director without importing an image:
+
+```text
+python aiblackhole-director/scripts/local_import.py --open
+```
+
+`--web-dir` is optional. If omitted, the helper first checks common local folders, then falls back to the bundled deployment package in `assets/`.
