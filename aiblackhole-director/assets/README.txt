@@ -1,4 +1,4 @@
-720 panorama director unpacked assets v1.3
+720 panorama director unpacked assets v1.4
 
 Files:
 - web/panorama-viewer.html: the 720 panorama director page
@@ -40,7 +40,7 @@ Director features:
 - Add occluder planes, circles, cubes, and spheres for manual foreground blocking.
 - Stretch cube occluders with the transform scale axes when you need rectangular blockers.
 - Export PNG screenshots.
-- Save and load scene JSON, including v1.3 multi-selection and skeleton-display states.
+- Save and load scene JSON, including v1.4 pose sliders, multi-selection, and skeleton-display states.
 
 Notes:
 - Python is required for the local server.

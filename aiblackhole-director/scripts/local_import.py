@@ -73,7 +73,7 @@ class DirectorRequestHandler(SimpleHTTPRequestHandler):
 
 def candidate_web_dirs(cwd: Path) -> list[Path]:
     return [
-        cwd / "output" / "panorama-director-v1.2" / "web",
+        cwd / "output" / "panorama-director-v1.4" / "web",
         cwd / "output",
         cwd,
     ]

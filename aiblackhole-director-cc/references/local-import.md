@@ -37,7 +37,7 @@ Do not pass `--open` during normal skill use. The helper should print JSON, then
 
 If `--web-dir` is omitted, the script searches common project folders:
 
-- `output/panorama-director-v1.2/web`
+- `output/panorama-director-v1.4/web`
 - `output`
 - current directory
 

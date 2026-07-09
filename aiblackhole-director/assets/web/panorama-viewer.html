@@ -7,7 +7,7 @@
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="favicon-192.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <title>720° 全景导演台 v1.3</title>
+  <title>720° 全景导演台 v1.4</title>
   <script type="importmap">
     {
       "imports": {
@@ -524,13 +524,49 @@
 
     .joint-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
+      gap: 12px;
+      margin-top: 12px;
     }
 
-    .joint-grid .wide-field {
-      grid-column: 1 / -1;
+    .joint-group {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .joint-group-title {
+      color: rgba(245, 247, 250, 0.86);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .joint-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .joint-single {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field input[type="range"] {
+      min-height: 24px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .field input[type="range"]:disabled {
+      cursor: not-allowed;
     }
 
     .part-toggle {
@@ -708,7 +744,7 @@
     <div class="upload-card">
       <div class="upload-icon">720</div>
       <h1>全景导演台</h1>
-      <p>先上传一张 720°/等距柱状全景图，然后添加角色、物体、遮挡物和机位构图。v1.3 支持批量选择、整体变换、骨骼可视化和撤销/重做。</p>
+      <p>先上传一张 720°/等距柱状全景图，然后添加角色、物体、遮挡物和机位构图。v1.4 支持批量选择、整体变换、骨骼可视化和撤销/重做。</p>
       <button class="primary-button" id="emptyUploadButton" type="button">上传全景图片</button>
       <div class="hint">也可以把图片直接拖到页面中</div>
     </div>
@@ -718,7 +754,7 @@
     <div class="brand">
       <img class="brand-mark" src="favicon-192.png" alt="Logo">
       <div class="brand-copy">
-        <p class="brand-title">720° 全景导演台 v1.3</p>
+        <p class="brand-title">720° 全景导演台 v1.4</p>
         <div class="file-meta" id="fileMeta">未加载全景图片</div>
       </div>
     </div>
@@ -829,37 +865,94 @@
           </select>
         </div>
         <div class="joint-grid">
-          <div class="field"><label for="headYaw">头部转向°</label><input id="headYaw" type="number" min="-100" max="100" step="1"></div>
-          <div class="field"><label for="headPitch">头部低抬°</label><input id="headPitch" type="number" min="-50" max="50" step="1"></div>
-          <div class="field"><label for="headRoll">头部侧歪°</label><input id="headRoll" type="number" min="-30" max="30" step="1"></div>
-          <div class="field"><label for="waistYaw">腰部左右°</label><input id="waistYaw" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="waistBend">腰部弯挺°</label><input id="waistBend" type="number" min="-100" max="60" step="1"></div>
-          <div class="field"><label for="waistSide">腰部侧弯°</label><input id="waistSide" type="number" min="-30" max="30" step="1"></div>
-          <div class="field"><label for="leftShoulder">左上臂°</label><input id="leftShoulder" type="number" min="-180" max="180" step="1"></div>
-          <div class="field"><label for="rightShoulder">右上臂°</label><input id="rightShoulder" type="number" min="-180" max="180" step="1"></div>
-          <div class="field"><label for="leftShoulderTwist">左上臂内外旋°</label><input id="leftShoulderTwist" type="number" min="-90" max="180" step="1"></div>
-          <div class="field"><label for="rightShoulderTwist">右上臂内外旋°</label><input id="rightShoulderTwist" type="number" min="-90" max="180" step="1"></div>
-          <div class="field"><label for="leftShoulderOut">左上臂外侧°</label><input id="leftShoulderOut" type="number" min="0" max="180" step="1"></div>
-          <div class="field"><label for="rightShoulderOut">右上臂外侧°</label><input id="rightShoulderOut" type="number" min="0" max="180" step="1"></div>
-          <div class="field"><label for="leftElbow">左肘°</label><input id="leftElbow" type="number" min="0" max="170" step="1"></div>
-          <div class="field"><label for="rightElbow">右肘°</label><input id="rightElbow" type="number" min="0" max="170" step="1"></div>
-          <div class="field"><label for="leftPalmTwist">左手掌内外°</label><input id="leftPalmTwist" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="rightPalmTwist">右手掌内外°</label><input id="rightPalmTwist" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="leftPalmPitch">左手掌上下°</label><input id="leftPalmPitch" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="rightPalmPitch">右手掌上下°</label><input id="rightPalmPitch" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="leftPalmSide">左手掌侧向°</label><input id="leftPalmSide" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="rightPalmSide">右手掌侧向°</label><input id="rightPalmSide" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="leftHip">左大腿°</label><input id="leftHip" type="number" min="-120" max="160" step="1"></div>
-          <div class="field"><label for="rightHip">右大腿°</label><input id="rightHip" type="number" min="-120" max="160" step="1"></div>
-          <div class="field"><label for="leftHipTwist">左大腿内外旋°</label><input id="leftHipTwist" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="rightHipTwist">右大腿内外旋°</label><input id="rightHipTwist" type="number" min="-90" max="90" step="1"></div>
-          <div class="field"><label for="leftHipOut">左大腿外侧°</label><input id="leftHipOut" type="number" min="-30" max="160" step="1"></div>
-          <div class="field"><label for="rightHipOut">右大腿外侧°</label><input id="rightHipOut" type="number" min="-30" max="160" step="1"></div>
-          <div class="field"><label for="leftKnee">左膝°</label><input id="leftKnee" type="number" min="0" max="140" step="1"></div>
-          <div class="field"><label for="rightKnee">右膝°</label><input id="rightKnee" type="number" min="0" max="140" step="1"></div>
-          <div class="field"><label for="leftFootPitch">左脚掌上下°</label><input id="leftFootPitch" type="number" min="-90" max="70" step="1"></div>
-          <div class="field"><label for="rightFootPitch">右脚掌上下°</label><input id="rightFootPitch" type="number" min="-90" max="70" step="1"></div>
-          <div class="field"><label for="bodyPitch">身体俯仰°</label><input id="bodyPitch" type="number" min="-90" max="90" step="1"></div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="head">头部</div>
+            <div class="joint-single">
+              <div class="field"><label for="headYaw">头部转向</label><input id="headYaw" type="range" min="-100" max="100" step="1"></div>
+              <div class="field"><label for="headPitch">低头 / 抬头</label><input id="headPitch" type="range" min="-50" max="50" step="1"></div>
+              <div class="field"><label for="headRoll">头部侧歪</label><input id="headRoll" type="range" min="-30" max="30" step="1"></div>
+            </div>
+          </div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="upperArm">上臂</div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftShoulder">左上臂前后</label><input id="leftShoulder" type="range" min="-180" max="180" step="1"></div>
+              <div class="field"><label for="rightShoulder">右上臂前后</label><input id="rightShoulder" type="range" min="-180" max="180" step="1"></div>
+            </div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftShoulderOut">左上臂外侧</label><input id="leftShoulderOut" type="range" min="0" max="180" step="1"></div>
+              <div class="field"><label for="rightShoulderOut">右上臂外侧</label><input id="rightShoulderOut" type="range" min="0" max="180" step="1"></div>
+            </div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftShoulderTwist">左上臂旋转</label><input id="leftShoulderTwist" type="range" min="-90" max="180" step="1"></div>
+              <div class="field"><label for="rightShoulderTwist">右上臂旋转</label><input id="rightShoulderTwist" type="range" min="-90" max="180" step="1"></div>
+            </div>
+          </div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="elbow">肘</div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftElbow">左肘前后</label><input id="leftElbow" type="range" min="0" max="170" step="1"></div>
+              <div class="field"><label for="rightElbow">右肘前后</label><input id="rightElbow" type="range" min="0" max="170" step="1"></div>
+            </div>
+          </div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="palm">手掌</div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftPalmTwist">左手掌内外</label><input id="leftPalmTwist" type="range" min="-90" max="90" step="1"></div>
+              <div class="field"><label for="rightPalmTwist">右手掌内外</label><input id="rightPalmTwist" type="range" min="-90" max="90" step="1"></div>
+            </div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftPalmPitch">左手掌上下</label><input id="leftPalmPitch" type="range" min="-90" max="90" step="1"></div>
+              <div class="field"><label for="rightPalmPitch">右手掌上下</label><input id="rightPalmPitch" type="range" min="-90" max="90" step="1"></div>
+            </div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftPalmSide">左手掌侧向</label><input id="leftPalmSide" type="range" min="-90" max="90" step="1"></div>
+              <div class="field"><label for="rightPalmSide">右手掌侧向</label><input id="rightPalmSide" type="range" min="-90" max="90" step="1"></div>
+            </div>
+          </div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="waist">腰部</div>
+            <div class="joint-single">
+              <div class="field"><label for="waistYaw">腰部左右</label><input id="waistYaw" type="range" min="-90" max="90" step="1"></div>
+              <div class="field"><label for="waistSide">腰部侧弯</label><input id="waistSide" type="range" min="-30" max="30" step="1"></div>
+            </div>
+          </div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="thigh">大腿</div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftHip">左大腿前后</label><input id="leftHip" type="range" min="-120" max="160" step="1"></div>
+              <div class="field"><label for="rightHip">右大腿前后</label><input id="rightHip" type="range" min="-120" max="160" step="1"></div>
+            </div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftHipOut">左大腿外侧</label><input id="leftHipOut" type="range" min="-30" max="160" step="1"></div>
+              <div class="field"><label for="rightHipOut">右大腿外侧</label><input id="rightHipOut" type="range" min="-30" max="160" step="1"></div>
+            </div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftHipTwist">左大腿旋转</label><input id="leftHipTwist" type="range" min="-90" max="90" step="1"></div>
+              <div class="field"><label for="rightHipTwist">右大腿旋转</label><input id="rightHipTwist" type="range" min="-90" max="90" step="1"></div>
+            </div>
+          </div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="knee">膝</div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftKnee">左膝前后</label><input id="leftKnee" type="range" min="0" max="140" step="1"></div>
+              <div class="field"><label for="rightKnee">右膝前后</label><input id="rightKnee" type="range" min="0" max="140" step="1"></div>
+            </div>
+          </div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="foot">脚掌</div>
+            <div class="joint-pair">
+              <div class="field"><label for="leftFootPitch">左脚掌上下</label><input id="leftFootPitch" type="range" min="-90" max="70" step="1"></div>
+              <div class="field"><label for="rightFootPitch">右脚掌上下</label><input id="rightFootPitch" type="range" min="-90" max="70" step="1"></div>
+            </div>
+          </div>
+          <div class="joint-group">
+            <div class="joint-group-title" data-joint-group="bodyPitch">身体俯仰</div>
+            <div class="joint-single">
+              <div class="field"><label for="waistBend">腰部弯挺</label><input id="waistBend" type="range" min="-100" max="60" step="1"></div>
+              <div class="field"><label for="bodyPitch">身体俯仰</label><input id="bodyPitch" type="range" min="-90" max="90" step="1"></div>
+            </div>
+          </div>
         </div>
         <div class="parts-grid" id="partsGrid"></div>
         <label class="checkbox-row">
