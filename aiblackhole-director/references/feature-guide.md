@@ -98,7 +98,7 @@ Screenshots export the current camera view. Occluders are used to hide character
 ## Suggested User Workflow
 
 1. Create a local director session with `scripts/local_import.py`.
-2. Open the generated local URL.
+2. Open the generated local URL with the agent's built-in browser when available.
 3. Add characters and objects.
 4. Use occluders to simulate partial blocking.
 5. Adjust camera, pose, and transforms.

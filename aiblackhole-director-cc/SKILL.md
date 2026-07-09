@@ -13,7 +13,7 @@ The default workflow is local:
 
 1. Resolve the skill folder as the directory containing this `SKILL.md`.
 2. Run `scripts/local_import.py` from this skill folder.
-3. Open the generated local URL, usually:
+3. Open the generated local URL with Claude Code's built-in browser or preview capability when available, usually:
 
 ```text
 http://127.0.0.1:<port>/panorama-viewer.html
@@ -83,14 +83,16 @@ http://127.0.0.1:<port>/panorama-viewer.html
 When the user gives a local image path, run:
 
 ```bash
-python "<skill-dir>/scripts/local_import.py" "<image-path>" --open
+python "<skill-dir>/scripts/local_import.py" "<image-path>"
 ```
 
 When the user only wants to open the director without importing an image, run:
 
 ```bash
-python "<skill-dir>/scripts/local_import.py" --open
+python "<skill-dir>/scripts/local_import.py"
 ```
+
+Do not pass `--open` during normal skill use. Parse the helper JSON, then open `url` with Claude Code's built-in browser or preview capability when available. Use `--open` only when the user explicitly asks to open the system default browser.
 
 The helper copies the image into a temporary local web session, starts a local static server, and prints JSON containing:
 

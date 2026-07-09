@@ -13,7 +13,7 @@ The default workflow is local:
 
 1. Use `scripts/local_import.py` to copy a local image into a temporary local director session.
 2. Start a local static server.
-3. Open the generated `http://127.0.0.1:<port>/panorama-viewer.html?image=...` URL.
+3. Open the generated `http://127.0.0.1:<port>/panorama-viewer.html?image=...` URL with the agent's built-in browser when available.
 
 If no `--web-dir` is supplied, the helper uses the default local director files.
 
@@ -22,7 +22,7 @@ Do not use `https://aiblackhole.net/panorama-viewer` as the default path for thi
 ## Core Workflow
 
 1. If the user gives a local image path, read `references/local-import.md` and run `scripts/local_import.py`.
-2. Open the helper output URL in the browser when browser control is available, or give the user the URL when it is not.
+2. Open the helper output URL in Codex's built-in browser when browser control is available, or give the user the URL when it is not.
 3. Confirm the page loaded and `document.body` has the `panorama-loaded` class when browser control is available.
 4. Identify the user's next task:
    - use the director
@@ -88,14 +88,16 @@ http://127.0.0.1:<port>/panorama-viewer.html
 When the user gives a local image path and wants it opened automatically, use:
 
 ```bash
-python <skill-dir>/scripts/local_import.py "<image-path>" --open
+python <skill-dir>/scripts/local_import.py "<image-path>"
 ```
 
 When the user only wants to deploy/open the local director without an image, use:
 
 ```bash
-python <skill-dir>/scripts/local_import.py --open
+python <skill-dir>/scripts/local_import.py
 ```
+
+Do not pass `--open` during normal skill use. Parse the helper JSON, then open `url` with Codex's built-in browser when available. Use `--open` only when the user explicitly asks to open the system default browser.
 
 Pass `--web-dir` only when the user explicitly wants to use a custom director web folder.
 

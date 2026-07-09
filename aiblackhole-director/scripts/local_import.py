@@ -125,7 +125,11 @@ def main() -> int:
         "--session-root",
         help="Directory for generated local sessions. Defaults to output/local-import-sessions.",
     )
-    parser.add_argument("--open", action="store_true", help="Open the URL in the default browser.")
+    parser.add_argument(
+        "--open",
+        action="store_true",
+        help="Open the URL in the system default browser. Skills should omit this and open the printed URL with the agent browser.",
+    )
     args = parser.parse_args()
 
     cwd = Path.cwd()

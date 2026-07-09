@@ -98,7 +98,7 @@ Screenshots export the current camera view. Occluders are used to hide character
 ## Suggested User Workflow
 
 1. Create a local director session with `scripts/local_import.py`.
-2. Open the generated local URL.
+2. Open the generated local URL with Claude Code's built-in browser or preview capability when available.
 3. Add characters and objects.
 4. Use occluders to simulate partial blocking.
 5. Adjust camera, pose, and transforms.

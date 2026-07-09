@@ -24,14 +24,16 @@ assets/web/
 Run:
 
 ```bash
-python <skill-dir>/scripts/local_import.py "C:/path/to/image.png" --open
+python <skill-dir>/scripts/local_import.py "C:/path/to/image.png"
 ```
 
 To deploy/open the local director without importing an image:
 
 ```bash
-python <skill-dir>/scripts/local_import.py --open
+python <skill-dir>/scripts/local_import.py
 ```
+
+Do not pass `--open` during normal skill use. The helper should print JSON, then the agent should open the returned `url` with its built-in browser when available.
 
 If `--web-dir` is omitted, the script searches common project folders:
 

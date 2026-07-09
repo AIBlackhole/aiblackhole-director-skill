@@ -96,13 +96,13 @@ Use /aiblackhole-director-cc to open this local panorama image in the director.
 For Codex local files, use the helper script:
 
 ```text
-python aiblackhole-director/scripts/local_import.py "C:/path/to/image.png" --open
+python aiblackhole-director/scripts/local_import.py "C:/path/to/image.png"
 ```
 
 For Claude Code local files, use:
 
 ```text
-python aiblackhole-director-cc/scripts/local_import.py "C:/path/to/image.png" --open
+python aiblackhole-director-cc/scripts/local_import.py "C:/path/to/image.png"
 ```
 
 The helper copies the image into a local director session and opens a URL like:
@@ -116,13 +116,12 @@ This does not upload the image to the public website.
 To open the local director without importing an image:
 
 ```text
-python aiblackhole-director/scripts/local_import.py --open
+python aiblackhole-director/scripts/local_import.py
 ```
 
 For Claude Code:
 
 ```text
-python aiblackhole-director-cc/scripts/local_import.py --open
+python aiblackhole-director-cc/scripts/local_import.py
 ```
-
 
