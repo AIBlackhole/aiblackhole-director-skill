@@ -1,4 +1,4 @@
-720 panorama director deployment package v1.3
+720 panorama director unpacked assets v1.3
 
 Files:
 - web/index.html: AI Blackhole Studio entry page
@@ -12,7 +12,7 @@ Files:
 - start-macos-linux.sh: macOS/Linux launcher
 
 Usage:
-1. Unzip the package.
+1. These files are already unpacked under the skill assets folder.
 2. Start the local server:
    - Windows: double-click start-windows.bat
    - macOS/Linux: run sh start-macos-linux.sh
@@ -47,5 +47,5 @@ Director features:
 Notes:
 - Python is required for the local server.
 - Use the local server instead of opening the HTML file directly, because the director uses local ES modules.
-- The package does not include sample panorama images, so it stays portable.
+- These assets do not include sample panorama images, so they stay portable.
 - The local server returns 204 for Chrome DevTools' automatic workspace probe to avoid noisy 404 logs.
