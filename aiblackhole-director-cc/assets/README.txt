@@ -1,11 +1,9 @@
 720 panorama director unpacked assets v1.3
 
 Files:
-- web/index.html: AI Blackhole Studio entry page
 - web/panorama-viewer.html: the 720 panorama director page
 - web/panorama-director.js: director-stage logic
 - web/favicon.ico, web/favicon-192.png, web/apple-touch-icon.png: page icons
-- web/ai-blackhole-studio-reference.png, web/vendor/gsap/: entry page visual and animation runtime
 - web/vendor/three/: local Three.js runtime and TransformControls
 - server/panorama_server.py: local static server
 - start-windows.bat: Windows launcher
@@ -16,8 +14,8 @@ Usage:
 2. Start the local server:
    - Windows: double-click start-windows.bat
    - macOS/Linux: run sh start-macos-linux.sh
-3. Visit http://127.0.0.1:<port>/index.html
-4. Click the panorama director card, then upload your own 720/equirectangular panorama image or a regular still image in the page.
+3. Visit http://127.0.0.1:<port>/panorama-viewer.html
+4. Upload your own 720/equirectangular panorama image or a regular still image in the page.
 
 Director features:
 - Add multiple character actors.
