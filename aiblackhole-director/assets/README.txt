@@ -16,7 +16,7 @@ Usage:
 2. Start the local server:
    - Windows: double-click start-windows.bat
    - macOS/Linux: run sh start-macos-linux.sh
-3. Visit http://127.0.0.1:8795/index.html
+3. Visit http://127.0.0.1:<port>/index.html
 4. Click the panorama director card, then upload your own 720/equirectangular panorama image or a regular still image in the page.
 
 Director features:
