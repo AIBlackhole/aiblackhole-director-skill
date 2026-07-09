@@ -103,6 +103,8 @@ The helper copies the image into a temporary local web session, starts a local s
 
 Explain that the file is copied into a local session and is not uploaded to any public website.
 
+The Claude Code skill stores the director web files unpacked under `assets/web/`. Do not create or expect a nested zip package inside this skill.
+
 ## Browser Checks
 
 When browser control is available, verify:

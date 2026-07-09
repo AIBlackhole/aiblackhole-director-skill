@@ -28,7 +28,7 @@ Check:
 2. The URL uses the same port printed by `scripts/local_import.py`.
 3. The port is not occupied by an older local session.
 4. The generated session `web` folder still exists.
-5. If no `--web-dir` was supplied, `assets/panorama-director-deploy-v1.2.zip` exists in the installed skill.
+5. If no `--web-dir` was supplied, `assets/web/panorama-viewer.html` and `assets/web/panorama-director.js` exist in the installed skill.
 
 ### Image returns 404
 
@@ -46,7 +46,7 @@ Check that the chosen `--web-dir` contains:
 - `panorama-viewer.html`
 - `panorama-director.js`
 
-If `--web-dir` was omitted, check that the bundled package contains these files under its `web/` folder.
+If `--web-dir` was omitted, check that the unpacked files exist under `assets/web/`.
 
 ### Assets fail to load
 
