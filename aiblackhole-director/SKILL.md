@@ -11,9 +11,10 @@ Use this skill to help users work with local AI Blackhole Studio panorama direct
 
 The default workflow is local:
 
-1. Use `scripts/local_import.py` to copy a local image into a temporary local director session.
-2. Start a local static server.
-3. Open the generated `http://127.0.0.1:<port>/panorama-viewer.html?image=...` URL with the agent's built-in browser when available.
+1. Use `scripts/local_import.py` to serve the director from `assets/web/`.
+2. If an image is provided, copy only that image into a temporary local `imports/` folder.
+3. Start a local static server.
+4. Open the generated `http://127.0.0.1:<port>/panorama-viewer.html?image=...` URL with the agent's built-in browser when available.
 
 If no `--web-dir` is supplied, the helper uses the default local director files.
 
@@ -101,7 +102,7 @@ Do not pass `--open` during normal skill use. Parse the helper JSON, then open `
 
 Pass `--web-dir` only when the user explicitly wants to use a custom director web folder.
 
-Use the helper output URL to open the local session. Explain that the image is copied into a temporary local web session and is not uploaded to any public website.
+Use the helper output URL to open the local session. Explain that the director page is served directly from `assets/web/`, while imported images are copied into a temporary local `imports/` folder and are not uploaded to any public website.
 
 The Codex skill stores the director web files unpacked under `assets/web/`. Do not create or expect a nested zip package inside this skill.
 
@@ -129,7 +130,7 @@ For local sessions, check:
 
 1. The local server process is running.
 2. The generated `imports/<image>` URL returns HTTP 200.
-3. `panorama-viewer.html` and `panorama-director.js` are present in the local web folder.
+3. `panorama-viewer.html` and `panorama-director.js` are present in the reported `web_dir`.
 4. The port is not occupied by an old session.
 5. Browser console/network errors if the image still fails to load.
 

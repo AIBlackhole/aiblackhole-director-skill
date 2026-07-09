@@ -4,12 +4,12 @@ Use this reference when the user wants Codex to open a local image in the direct
 
 ## Why This Exists
 
-Browsers do not allow a webpage to read arbitrary local file paths. This skill avoids browser file-picker limits by creating a local static session that serves the selected image as a local URL.
+Browsers do not allow a webpage to read arbitrary local file paths. This skill avoids browser file-picker limits by running a local server that serves the director web files and exposes the selected image as a local `imports/` URL.
 
-For automatic local image import, create a local director session:
+For automatic local image import:
 
-1. Copy the director web files into a temporary local session.
-2. Copy the user's image into that session under `imports/`.
+1. Serve the director directly from the resolved web directory, usually `assets/web/`.
+2. Copy only the user's image into a temporary local session under `imports/`.
 3. Start a local static server.
 4. Open `panorama-viewer.html?image=imports/<image-file>`.
 
@@ -54,10 +54,12 @@ The script prints JSON with:
 
 - `url`: local URL to open
 - `pid`: local server process ID
-- `web_dir`: generated session web folder
+- `web_dir`: director web folder being served
+- `session_dir`: temporary image session folder, when an image was provided
+- `imports_dir`: temporary imports folder, when an image was provided
 - `imported_image`: copied image path
 - `stop_hint`: command to stop the server
 
 ## Important Boundary
 
-This does not upload the user's image to any public website. It creates a local session that behaves like the director page and loads the copied image by local URL.
+This does not upload the user's image to any public website. The director web files stay in place, and only the imported image is copied into a temporary local folder for serving by local URL.

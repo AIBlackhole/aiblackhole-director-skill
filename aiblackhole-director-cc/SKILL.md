@@ -94,16 +94,18 @@ python "<skill-dir>/scripts/local_import.py"
 
 Do not pass `--open` during normal skill use. Parse the helper JSON, then open `url` with Claude Code's built-in browser or preview capability when available. Use `--open` only when the user explicitly asks to open the system default browser.
 
-The helper copies the image into a temporary local web session, starts a local static server, and prints JSON containing:
+The helper serves the director directly from `assets/web/`, copies only imported images into a temporary local `imports/` folder, starts a local static server, and prints JSON containing:
 
 - `url`: local director URL to open
 - `pid`: local server process ID
 - `port`: selected local port
-- `web_dir`: generated local web folder
+- `web_dir`: director web folder being served
+- `session_dir`: temporary image session folder when an image was provided
+- `imports_dir`: temporary imports folder when an image was provided
 - `imported_image`: copied local image path when an image was provided
 - `stop_hint`: command hint for stopping the local server
 
-Explain that the file is copied into a local session and is not uploaded to any public website.
+Explain that the director web files stay in place, and the image is copied into a temporary local imports folder, not uploaded to any public website.
 
 The Claude Code skill stores the director web files unpacked under `assets/web/`. Do not create or expect a nested zip package inside this skill.
 
