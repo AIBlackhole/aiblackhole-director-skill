@@ -1,4 +1,4 @@
-import * as THREE from "three";
+﻿import * as THREE from "three";
 import { TransformControls } from "./vendor/three/addons/controls/TransformControls.js";
 
 const dom = {
@@ -73,15 +73,15 @@ const dom = {
   },
 };
 
-const APP_VERSION = "v1.4";
+const APP_VERSION = "v1.4.1";
 const LANGUAGE_STORAGE_KEY = "panorama-director-language";
 
 const translations = {
   zh: {
-    pageTitle: "720° 全景导演台 v1.4",
+    pageTitle: "720° 全景导演台 v1.4.1",
     canvasLabel: "720 全景导演台画面",
     emptyTitle: "全景导演台",
-    emptyDescription: "先上传一张 720°/等距柱状全景图，然后添加角色、物体、遮挡物和机位构图。v1.4 支持批量选择、整体变换、骨骼可视化和撤销/重做。",
+    emptyDescription: "先上传一张 720°/等距柱状全景图，然后添加角色、物体、遮挡物和机位构图。v1.4.1 支持批量选择、整体变换、骨骼可视化和撤销/重做。",
     emptyUpload: "上传全景图片",
     emptyHint: "也可以把图片直接拖到页面中",
     upload: "上传全景",
@@ -202,6 +202,8 @@ const translations = {
     flatLoaded: "普通图片已加载，已进入固定画面导演台",
     imageLoadFailed: "图片加载失败，请换一张全景图重试",
     screenshotSaved: "当前机位截图已保存",
+    screenshotCopied: "当前机位截图已保存并复制到剪贴板",
+    screenshotCopyFailed: "当前机位截图已保存，但剪贴板不可用",
     sceneSaved: "场景 JSON 已保存",
     sceneLoaded: "场景 JSON 已加载",
     sceneParseFailed: "场景 JSON 解析失败",
@@ -213,10 +215,10 @@ const translations = {
     defaultImageName: "全景图片",
   },
   en: {
-    pageTitle: "720° Panorama Director v1.4",
+    pageTitle: "720° Panorama Director v1.4.1",
     canvasLabel: "720 panorama director canvas",
     emptyTitle: "Panorama Director",
-    emptyDescription: "Upload a 720°/equirectangular panorama, then add characters, objects, occluders, and camera blocking. v1.4 supports multi-select, group transforms, skeleton visualization, and undo/redo.",
+    emptyDescription: "Upload a 720°/equirectangular panorama, then add characters, objects, occluders, and camera blocking. v1.4.1 supports multi-select, group transforms, skeleton visualization, and undo/redo.",
     emptyUpload: "Upload Panorama",
     emptyHint: "You can also drag an image onto the page.",
     upload: "Upload",
@@ -337,6 +339,8 @@ const translations = {
     flatLoaded: "Regular image loaded. Fixed-frame director mode is active.",
     imageLoadFailed: "Image failed to load. Please try another panorama.",
     screenshotSaved: "Current camera view saved",
+    screenshotCopied: "Current camera view saved and copied to clipboard",
+    screenshotCopyFailed: "Current camera view saved, but clipboard copy is unavailable",
     sceneSaved: "Scene JSON saved",
     sceneLoaded: "Scene JSON loaded",
     sceneParseFailed: "Scene JSON parse failed",
@@ -2317,10 +2321,49 @@ function downloadBlob(blob, fileName) {
   setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
+async function copyPngBlobToClipboard(blobPromise) {
+  if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") return false;
+  try {
+    const clipboardItem = new ClipboardItem({ "image/png": blobPromise });
+    await navigator.clipboard.write([clipboardItem]);
+    return true;
+  } catch (error) {
+    try {
+      const blob = await blobPromise;
+      if (!blob) return false;
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      return true;
+    } catch (fallbackError) {
+      return false;
+    }
+  }
+}
+
+function canvasToPngBlob(canvas) {
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), "image/png");
+  });
+}
+
 function timestamp() {
   const d = new Date();
   const pad = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
+function restoreScreenshotState(changed, wasTransformVisible, wasSelectionMarkerVisible, wasSkeletonVisible) {
+  transformControls.visible = wasTransformVisible;
+  selectionMarkerGroup.visible = wasSelectionMarkerVisible;
+  mannequinSkeletonGroup.visible = wasSkeletonVisible;
+  for (const entry of changed) {
+    entry.material.colorWrite = entry.colorWrite;
+    entry.material.opacity = entry.opacity;
+    entry.material.transparent = entry.transparent;
+    entry.material.depthWrite = entry.depthWrite;
+    entry.material.depthTest = entry.depthTest;
+    entry.material.needsUpdate = true;
+  }
+  document.body.classList.remove("is-capturing");
 }
 
 function captureScreenshot() {
@@ -2356,22 +2399,20 @@ function captureScreenshot() {
   document.body.classList.add("is-capturing");
   renderer.render(scene, camera);
 
-  renderer.domElement.toBlob((blob) => {
+  const blobPromise = canvasToPngBlob(renderer.domElement);
+  const clipboardPromise = copyPngBlobToClipboard(blobPromise);
+
+  blobPromise.then(async (blob) => {
+    let copied = false;
     if (blob) downloadBlob(blob, `${tr("screenshotFile")}-${timestamp()}.png`);
-    transformControls.visible = wasTransformVisible;
-    selectionMarkerGroup.visible = wasSelectionMarkerVisible;
-    mannequinSkeletonGroup.visible = wasSkeletonVisible;
-    for (const entry of changed) {
-      entry.material.colorWrite = entry.colorWrite;
-      entry.material.opacity = entry.opacity;
-      entry.material.transparent = entry.transparent;
-      entry.material.depthWrite = entry.depthWrite;
-      entry.material.depthTest = entry.depthTest;
-      entry.material.needsUpdate = true;
+    restoreScreenshotState(changed, wasTransformVisible, wasSelectionMarkerVisible, wasSkeletonVisible);
+    try {
+      copied = await clipboardPromise;
+    } catch (error) {
+      copied = false;
     }
-    document.body.classList.remove("is-capturing");
-    showToast(tr("screenshotSaved"));
-  }, "image/png");
+    showToast(tr(copied ? "screenshotCopied" : "screenshotCopyFailed"));
+  });
 }
 
 function serializeScene() {
