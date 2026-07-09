@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090b0f">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="favicon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>720° 全景导演台 v1.3</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/three.module.js"
+      }
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07090d;
+      --panel: rgba(12, 15, 21, 0.76);
+      --panel-strong: rgba(12, 15, 21, 0.94);
+      --line: rgba(255, 255, 255, 0.13);
+      --line-strong: rgba(255, 255, 255, 0.22);
+      --text: #f5f7fa;
+      --muted: #aeb7c5;
+      --accent: #80e8c8;
+      --accent-strong: #a0f2da;
+      --danger: #ffaaa5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    #viewer {
+      position: fixed;
+      inset: 0;
+    }
+
+    #stage {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    #stage.dragging {
+      cursor: grabbing;
+    }
+
+    .topbar {
+      position: fixed;
+      z-index: 5;
+      top: max(18px, env(safe-area-inset-top));
+      left: 18px;
+      right: 376px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      pointer-events: none;
+    }
+
+    .brand,
+    .actions,
+    .panel,
+    .toast {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+      padding: 9px 12px 9px 10px;
+      border-radius: 14px;
+      pointer-events: auto;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      border-radius: 10px;
+      object-fit: cover;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .file-meta {
+      max-width: min(42vw, 460px);
+      margin-top: 2px;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      padding: 5px;
+      border-radius: 14px;
+      pointer-events: auto;
+    }
+
+    .icon-button,
+    .primary-button,
+    .mode-button,
+    .small-button {
+      min-height: 36px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 160ms ease, transform 160ms ease, opacity 160ms ease;
+    }
+
+    .icon-button {
+      display: grid;
+      width: 40px;
+      padding: 0;
+      place-items: center;
+      background: transparent;
+    }
+
+    .icon-button:hover,
+    .mode-button:hover,
+    .small-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .icon-button:active,
+    .primary-button:active,
+    .mode-button:active,
+    .small-button:active {
+      transform: scale(0.96);
+    }
+
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+    }
+
+    .language-button {
+      width: auto;
+      min-width: 54px;
+      padding: 0 10px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 13px;
+      color: #07110e;
+      background: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .primary-button:hover {
+      background: var(--accent-strong);
+    }
+
+    .mode-button,
+    .small-button {
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .mode-button.active {
+      border-color: rgba(128, 232, 200, 0.55);
+      color: var(--accent);
+      background: rgba(128, 232, 200, 0.12);
+    }
+
+    .icon-button:disabled,
+    .primary-button:disabled,
+    .mode-button:disabled,
+    .small-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+      transform: none;
+    }
+
+    .empty-state {
+      position: fixed;
+      z-index: 4;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(57, 77, 78, 0.26), transparent 30%),
+        linear-gradient(150deg, #11151c, #07090d 72%);
+      transition: opacity 300ms ease, visibility 300ms ease;
+    }
+
+    .empty-state.hidden {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .upload-card {
+      width: min(560px, 100%);
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      text-align: center;
+      background: rgba(13, 18, 24, 0.86);
+      box-shadow: 0 24px 72px rgba(0, 0, 0, 0.42);
+    }
+
+    .upload-card h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(28px, 5vw, 48px);
+      letter-spacing: -0.055em;
+    }
+
+    .upload-card p {
+      margin: 0 auto 22px;
+      max-width: 420px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .upload-icon {
+      display: grid;
+      width: 72px;
+      height: 72px;
+      margin: 0 auto;
+      place-items: center;
+      border-radius: 24px;
+      color: #07110e;
+      background: var(--accent);
+      font-weight: 900;
+    }
+
+    .hint {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .panel {
+      position: fixed;
+      z-index: 5;
+      top: max(18px, env(safe-area-inset-top));
+      right: 18px;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      width: 340px;
+      overflow: auto;
+      border-radius: 20px;
+      pointer-events: auto;
+      transition: opacity 220ms ease, transform 220ms ease, visibility 220ms ease;
+    }
+
+    body:not(.panorama-loaded) .panel {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateX(18px);
+      pointer-events: none;
+    }
+
+    body:not(.panorama-loaded) .topbar {
+      right: 18px;
+    }
+
+    body.panel-collapsed .panel {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateX(24px);
+      pointer-events: none;
+    }
+
+    body.panel-collapsed .topbar {
+      right: 18px;
+    }
+
+    .panel-header {
+      position: sticky;
+      z-index: 2;
+      top: 0;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(12, 15, 21, 0.96);
+      backdrop-filter: blur(18px);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .panel-title h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .panel-title span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .panel-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .panel-hide-button {
+      min-height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+    }
+
+    .panel-hide-button:hover {
+      color: var(--accent);
+      background: rgba(128, 232, 200, 0.12);
+    }
+
+    body:not(.panorama-loaded) #panelToggleButton {
+      display: none;
+    }
+
+    .panel-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .panel-body {
+      padding: 14px 16px 18px;
+    }
+
+    .section {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:first-child {
+      padding-top: 0;
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+    }
+
+    .section h3 {
+      margin: 0 0 10px;
+      color: #e9edf4;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .button-grid.three-columns {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .small-button,
+    .mode-button {
+      padding: 0 10px;
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .field label,
+    .checkbox-row {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      outline: none;
+    }
+
+    .field select {
+      padding: 0 30px 0 10px;
+      border-color: rgba(128, 232, 200, 0.34);
+      color: #f8fffc;
+      background-color: rgba(19, 28, 34, 0.96);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      font-weight: 650;
+    }
+
+    .field select:focus {
+      border-color: rgba(128, 232, 200, 0.78);
+      box-shadow: 0 0 0 3px rgba(128, 232, 200, 0.16);
+    }
+
+    .field select:disabled {
+      color: rgba(245, 247, 250, 0.48);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .field select option {
+      color: #f8fffc;
+      background: #111820;
+      font-weight: 500;
+    }
+
+    .field input[type="number"] {
+      padding: 0 9px;
+    }
+
+    .field input[type="color"] {
+      padding: 3px;
+    }
+
+    .axis-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .lock-button {
+      min-height: 34px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .lock-button.locked {
+      border-color: rgba(255, 184, 107, 0.62);
+      color: #ffd8a8;
+      background: rgba(255, 184, 107, 0.13);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 9px;
+    }
+
+    .parts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .joint-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .joint-grid .wide-field {
+      grid-column: 1 / -1;
+    }
+
+    .part-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .layer-list {
+      display: grid;
+      gap: 6px;
+      max-height: 156px;
+      overflow: auto;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .layer-empty {
+      padding: 8px 4px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .layer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 32px;
+      padding: 0 9px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .layer-item.active {
+      border-color: rgba(128, 232, 200, 0.58);
+      background: rgba(128, 232, 200, 0.12);
+    }
+
+    .layer-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .layer-state {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .help {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 7;
+      left: 50%;
+      bottom: max(20px, env(safe-area-inset-bottom));
+      max-width: min(560px, calc(100vw - 32px));
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translate(-50%, 14px);
+      transition: opacity 220ms ease, transform 220ms ease;
+      pointer-events: none;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .site-link {
+      position: fixed;
+      z-index: 5;
+      left: max(18px, env(safe-area-inset-left));
+      bottom: max(16px, env(safe-area-inset-bottom));
+      max-width: min(420px, calc(100vw - 36px));
+      padding: 9px 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: rgba(245, 247, 250, 0.78);
+      background: rgba(8, 12, 18, 0.58);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
+      backdrop-filter: blur(14px);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      pointer-events: auto;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: color 160ms ease, border-color 160ms ease, background 160ms ease, opacity 160ms ease;
+    }
+
+    .site-link:hover {
+      border-color: rgba(128, 232, 200, 0.54);
+      color: var(--accent-strong);
+      background: rgba(8, 15, 20, 0.78);
+    }
+
+    body.is-capturing .site-link {
+      display: none;
+    }
+
+    .drop-active #viewer::after {
+      position: fixed;
+      z-index: 6;
+      inset: 18px;
+      display: grid;
+      place-items: center;
+      border: 2px dashed rgba(128, 232, 200, 0.7);
+      border-radius: 24px;
+      color: var(--accent);
+      background: rgba(7, 9, 13, 0.54);
+      content: attr(data-drop-label);
+      font-size: 20px;
+      font-weight: 800;
+      pointer-events: none;
+    }
+
+    .hidden-input {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 920px) {
+      .topbar {
+        right: 18px;
+      }
+
+      .panel {
+        top: auto;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: auto;
+        max-height: 46vh;
+      }
+
+      .file-meta {
+        max-width: 36vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="viewer" data-drop-label="松开以上传全景图片">
+    <canvas id="stage" aria-label="720 全景导演台画面"></canvas>
+  </div>
+
+  <section class="empty-state" id="emptyState">
+    <div class="upload-card">
+      <div class="upload-icon">720</div>
+      <h1>全景导演台</h1>
+      <p>先上传一张 720°/等距柱状全景图，然后添加角色、物体、遮挡物和机位构图。v1.3 支持批量选择、整体变换、骨骼可视化和撤销/重做。</p>
+      <button class="primary-button" id="emptyUploadButton" type="button">上传全景图片</button>
+      <div class="hint">也可以把图片直接拖到页面中</div>
+    </div>
+  </section>
+
+  <header class="topbar">
+    <div class="brand">
+      <img class="brand-mark" src="favicon-192.png" alt="Logo">
+      <div class="brand-copy">
+        <p class="brand-title">720° 全景导演台 v1.3</p>
+        <div class="file-meta" id="fileMeta">未加载全景图片</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary-button" id="uploadButton" type="button">上传全景</button>
+      <button class="icon-button" id="screenshotButton" type="button" title="保存当前视角为 PNG（S）" aria-label="保存当前视角为 PNG（S）">
+        <svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v10H4z"/><circle cx="12" cy="13" r="3"/></svg>
+      </button>
+      <button class="icon-button" id="resetCameraButton" type="button" title="重置机位（R）" aria-label="重置机位（R）">
+        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 2.35 5.65"/><path d="M4 18v-6h6"/></svg>
+      </button>
+      <button class="icon-button" id="fullscreenButton" type="button" title="全画面（F）" aria-label="切换全画面（F）">
+        <svg viewBox="0 0 24 24"><path d="M8 4H4v4"/><path d="M16 4h4v4"/><path d="M20 16v4h-4"/><path d="M4 16v4h4"/></svg>
+      </button>
+      <button class="icon-button language-button" id="languageButton" type="button" title="Switch language" aria-label="Switch language">En/中</button>
+      <button class="icon-button" id="panelToggleButton" type="button" title="隐藏导演台" aria-label="隐藏导演台">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M15 5v14"/><path d="M8 12h4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <aside class="panel" id="directorPanel">
+    <div class="panel-header">
+      <div class="panel-header-row">
+        <div class="panel-title">
+          <h2>导演台</h2>
+          <span id="selectionBadge">未选择</span>
+        </div>
+        <button class="panel-hide-button" id="hidePanelButton" type="button">隐藏</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <section class="section">
+        <h3>添加</h3>
+        <div class="button-grid">
+          <button class="small-button" id="addMannequinButton" type="button">角色</button>
+          <button class="small-button" id="addCrowdButton" type="button">群众阵列</button>
+          <button class="small-button" id="addCubeButton" type="button">正方体</button>
+          <button class="small-button" id="addSphereButton" type="button">球体</button>
+          <button class="small-button" id="addOccluderPlaneButton" type="button">遮挡平面</button>
+          <button class="small-button" id="addOccluderCircleButton" type="button">遮挡圆形</button>
+          <button class="small-button" id="addOccluderBoxButton" type="button">遮挡盒</button>
+          <button class="small-button" id="addOccluderSphereButton" type="button">遮挡球体</button>
+        </div>
+        <p class="help">遮挡物在编辑时半透明显示，截图时可作为不可见深度遮罩，用来挡住角色身体局部。</p>
+      </section>
+
+      <section class="section">
+        <h3>对象</h3>
+        <div class="field">
+          <label for="objectSelect">当前对象</label>
+          <select id="objectSelect"></select>
+        </div>
+        <div class="button-grid" style="margin-top: 8px;">
+          <button class="small-button" id="duplicateButton" type="button">复制</button>
+          <button class="small-button" id="deleteButton" type="button">删除</button>
+        </div>
+        <div class="field">
+          <label>批量选择</label>
+          <div class="layer-list" id="layerList"></div>
+        </div>
+        <p class="help">列表支持 Ctrl/Command 多选，Shift 选择连续范围；多选后会显示每个对象的中心 XYZ 轴，并可作为整体移动、旋转、缩放、复制和删除。</p>
+      </section>
+
+      <section class="section">
+        <h3>外观</h3>
+        <div class="axis-grid">
+          <div class="field">
+            <label for="colorInput">颜色</label>
+            <input id="colorInput" type="color" value="#4da3ff">
+          </div>
+          <div class="field">
+            <label for="scaleInput">大小</label>
+            <input id="scaleInput" type="number" min="0.05" max="8" step="0.1" value="1">
+          </div>
+          <div class="field">
+            <label for="lockButton">锁定对象</label>
+            <button class="small-button lock-button" id="lockButton" type="button" aria-pressed="false">锁定</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>工具</h3>
+        <div class="mode-grid">
+          <button class="mode-button active" data-transform-mode="translate" type="button">移动</button>
+          <button class="mode-button" data-transform-mode="rotate" type="button">旋转</button>
+          <button class="mode-button" data-transform-mode="scale" type="button">缩放</button>
+        </div>
+        <p class="help">点击对象后可直接拖动，或使用三轴手柄精确调整。空白处拖动画面，滚轮缩放视角。</p>
+      </section>
+
+      <section class="section" id="poseSection">
+        <h3>角色姿势</h3>
+        <div class="field">
+          <label for="poseSelect">姿势预设</label>
+          <select id="poseSelect">
+            <option value="standing">直立</option>
+            <option value="bowing">弯腰</option>
+            <option value="sitting">坐</option>
+            <option value="kneeling">跪</option>
+            <option value="squatting">蹲</option>
+            <option value="supine">躺</option>
+            <option value="prone">趴</option>
+            <option value="walking">行走</option>
+            <option value="pointing">指向</option>
+          </select>
+        </div>
+        <div class="joint-grid">
+          <div class="field"><label for="headYaw">头部转向°</label><input id="headYaw" type="number" min="-100" max="100" step="1"></div>
+          <div class="field"><label for="headPitch">头部低抬°</label><input id="headPitch" type="number" min="-50" max="50" step="1"></div>
+          <div class="field"><label for="headRoll">头部侧歪°</label><input id="headRoll" type="number" min="-30" max="30" step="1"></div>
+          <div class="field"><label for="waistYaw">腰部左右°</label><input id="waistYaw" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="waistBend">腰部弯挺°</label><input id="waistBend" type="number" min="-100" max="60" step="1"></div>
+          <div class="field"><label for="waistSide">腰部侧弯°</label><input id="waistSide" type="number" min="-30" max="30" step="1"></div>
+          <div class="field"><label for="leftShoulder">左上臂°</label><input id="leftShoulder" type="number" min="-180" max="180" step="1"></div>
+          <div class="field"><label for="rightShoulder">右上臂°</label><input id="rightShoulder" type="number" min="-180" max="180" step="1"></div>
+          <div class="field"><label for="leftShoulderTwist">左上臂内外旋°</label><input id="leftShoulderTwist" type="number" min="-90" max="180" step="1"></div>
+          <div class="field"><label for="rightShoulderTwist">右上臂内外旋°</label><input id="rightShoulderTwist" type="number" min="-90" max="180" step="1"></div>
+          <div class="field"><label for="leftShoulderOut">左上臂外侧°</label><input id="leftShoulderOut" type="number" min="0" max="180" step="1"></div>
+          <div class="field"><label for="rightShoulderOut">右上臂外侧°</label><input id="rightShoulderOut" type="number" min="0" max="180" step="1"></div>
+          <div class="field"><label for="leftElbow">左肘°</label><input id="leftElbow" type="number" min="0" max="170" step="1"></div>
+          <div class="field"><label for="rightElbow">右肘°</label><input id="rightElbow" type="number" min="0" max="170" step="1"></div>
+          <div class="field"><label for="leftPalmTwist">左手掌内外°</label><input id="leftPalmTwist" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="rightPalmTwist">右手掌内外°</label><input id="rightPalmTwist" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="leftPalmPitch">左手掌上下°</label><input id="leftPalmPitch" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="rightPalmPitch">右手掌上下°</label><input id="rightPalmPitch" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="leftPalmSide">左手掌侧向°</label><input id="leftPalmSide" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="rightPalmSide">右手掌侧向°</label><input id="rightPalmSide" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="leftHip">左大腿°</label><input id="leftHip" type="number" min="-120" max="160" step="1"></div>
+          <div class="field"><label for="rightHip">右大腿°</label><input id="rightHip" type="number" min="-120" max="160" step="1"></div>
+          <div class="field"><label for="leftHipTwist">左大腿内外旋°</label><input id="leftHipTwist" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="rightHipTwist">右大腿内外旋°</label><input id="rightHipTwist" type="number" min="-90" max="90" step="1"></div>
+          <div class="field"><label for="leftHipOut">左大腿外侧°</label><input id="leftHipOut" type="number" min="-30" max="160" step="1"></div>
+          <div class="field"><label for="rightHipOut">右大腿外侧°</label><input id="rightHipOut" type="number" min="-30" max="160" step="1"></div>
+          <div class="field"><label for="leftKnee">左膝°</label><input id="leftKnee" type="number" min="0" max="140" step="1"></div>
+          <div class="field"><label for="rightKnee">右膝°</label><input id="rightKnee" type="number" min="0" max="140" step="1"></div>
+          <div class="field"><label for="leftFootPitch">左脚掌上下°</label><input id="leftFootPitch" type="number" min="-90" max="70" step="1"></div>
+          <div class="field"><label for="rightFootPitch">右脚掌上下°</label><input id="rightFootPitch" type="number" min="-90" max="70" step="1"></div>
+          <div class="field"><label for="bodyPitch">身体俯仰°</label><input id="bodyPitch" type="number" min="-90" max="90" step="1"></div>
+        </div>
+        <div class="parts-grid" id="partsGrid"></div>
+        <label class="checkbox-row">
+          <span>显示角色骨骼（截图时自动隐藏）</span>
+          <input id="showSkeletonInput" type="checkbox">
+        </label>
+      </section>
+
+      <section class="section">
+        <h3>XYZ 平移</h3>
+        <div class="axis-grid">
+          <div class="field"><label for="posX">X</label><input id="posX" type="number" step="0.1"></div>
+          <div class="field"><label for="posY">Y</label><input id="posY" type="number" step="0.1"></div>
+          <div class="field"><label for="posZ">Z</label><input id="posZ" type="number" step="0.1"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>XYZ 旋转</h3>
+        <div class="axis-grid">
+          <div class="field"><label for="rotX">X°</label><input id="rotX" type="number" step="1"></div>
+          <div class="field"><label for="rotY">Y°</label><input id="rotY" type="number" step="1"></div>
+          <div class="field"><label for="rotZ">Z°</label><input id="rotZ" type="number" step="1"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>遮挡与导出</h3>
+        <label class="checkbox-row">
+          <span>截图时隐藏遮挡物，仅保留遮挡效果</span>
+          <input id="hideOccludersInShot" type="checkbox" checked>
+        </label>
+        <div class="button-grid" style="margin-top: 10px;">
+          <button class="small-button" id="saveSceneButton" type="button">保存场景</button>
+          <button class="small-button" id="loadSceneButton" type="button">加载场景</button>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>历史</h3>
+        <div class="button-grid">
+          <button class="small-button" id="undoButton" type="button" disabled>撤销</button>
+          <button class="small-button" id="redoButton" type="button" disabled>重做</button>
+        </div>
+        <p class="help">快捷键：Ctrl+Z 撤销，Ctrl+Y 或 Ctrl+Shift+Z 重做。</p>
+      </section>
+    </div>
+  </aside>
+
+  <input class="hidden-input" id="fileInput" type="file" accept="image/*">
+  <input class="hidden-input" id="sceneInput" type="file" accept="application/json,.json">
+  <a class="site-link" href="https://aiblackhole.net/panorama-viewer" target="_blank" rel="noopener noreferrer">https://aiblackhole.net/panorama-viewer</a>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="panorama-director.js"></script>
+</body>
+</html>

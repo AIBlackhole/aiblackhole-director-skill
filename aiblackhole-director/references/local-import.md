@@ -13,10 +13,10 @@ For automatic local image import, create a local director session:
 3. Start a local static server.
 4. Open `panorama-viewer.html?image=imports/<image-file>`.
 
-The skill includes a bundled director deployment package:
+The Codex skill includes unpacked director web files:
 
 ```text
-assets/panorama-director-deploy-v1.2.zip
+assets/web/
 ```
 
 ## Script
@@ -39,7 +39,7 @@ If `--web-dir` is omitted, the script searches common project folders:
 - `output`
 - current directory
 
-If none are found, it extracts and uses `assets/panorama-director-deploy-v1.2.zip`.
+If none are found, it uses the unpacked director files under `assets/web/`.
 
 The web directory must contain:
 

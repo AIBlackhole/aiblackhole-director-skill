@@ -101,6 +101,8 @@ Pass `--web-dir` only when the user explicitly wants to use a custom director we
 
 Use the helper output URL to open the local session. Explain that the image is copied into a temporary local web session and is not uploaded to any public website.
 
+The Codex skill stores the director web files unpacked under `assets/web/`. Do not create or expect a nested zip package inside this skill.
+
 ## Browser Checks
 
 When browser control is available, verify:

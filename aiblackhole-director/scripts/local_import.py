@@ -11,12 +11,10 @@ import subprocess
 import sys
 import time
 import webbrowser
-import zipfile
 from pathlib import Path
 
 
 REQUIRED_FILES = ("panorama-viewer.html", "panorama-director.js")
-BUNDLED_PACKAGE = "panorama-director-deploy-v1.2.zip"
 
 
 def candidate_web_dirs(cwd: Path) -> list[Path]:
@@ -41,20 +39,11 @@ def find_web_dir(root: Path) -> Path | None:
     return None
 
 
-def safe_extract(zip_path: Path, destination: Path) -> None:
-    destination.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(zip_path) as archive:
-        for member in archive.infolist():
-            target = (destination / member.filename).resolve()
-            if destination.resolve() not in target.parents and target != destination.resolve():
-                raise SystemExit(f"Unsafe path in bundled package: {member.filename}")
-        archive.extractall(destination)
-
-
-def bundled_package_path() -> Path | None:
+def bundled_assets_dir() -> Path | None:
     skill_dir = Path(__file__).resolve().parents[1]
-    candidate = skill_dir / "assets" / BUNDLED_PACKAGE
-    return candidate if candidate.is_file() else None
+    candidate = skill_dir / "assets"
+    bundled_web_dir = find_web_dir(candidate)
+    return bundled_web_dir.resolve() if bundled_web_dir else None
 
 
 def resolve_web_dir(cwd: Path, explicit: str | None, session_dir: Path) -> tuple[Path, str]:
@@ -68,18 +57,13 @@ def resolve_web_dir(cwd: Path, explicit: str | None, session_dir: Path) -> tuple
         if is_web_dir(path):
             return path.resolve(), "workspace-web-dir"
 
-    package = bundled_package_path()
-    if package:
-        extract_dir = session_dir / "bundled-package"
-        safe_extract(package, extract_dir)
-        bundled_web_dir = find_web_dir(extract_dir)
-        if bundled_web_dir:
-            return bundled_web_dir.resolve(), "bundled-package"
-        raise SystemExit(f"Bundled package does not contain required web files: {package}")
+    bundled_web_dir = bundled_assets_dir()
+    if bundled_web_dir:
+        return bundled_web_dir, "bundled-assets"
 
     checked = "\n".join(str(path) for path in candidate_web_dirs(cwd))
     raise SystemExit(
-        "Could not find a local director web directory or bundled package. Pass --web-dir "
+        "Could not find a local director web directory or bundled assets. Pass --web-dir "
         "with a folder that contains panorama-viewer.html and panorama-director.js.\nChecked:\n"
         f"{checked}"
     )
@@ -134,7 +118,7 @@ def main() -> int:
     parser.add_argument(
         "--web-dir",
         help="Folder containing panorama-viewer.html and panorama-director.js. "
-        "Defaults to common Project01 output folders, then the bundled director package.",
+        "Defaults to common Project01 output folders, then assets/web in this skill.",
     )
     parser.add_argument("--port", type=int, default=8766, help="Preferred local port.")
     parser.add_argument(
