@@ -128,4 +128,11 @@ python aiblackhole-director-cc/scripts/local_import.py
 ## License
 
 This project is licensed under the MIT License.
+
 Copyright (c) 2026 AIBlackhole.
+
+See the [LICENSE](LICENSE) file for details.
+
+### Attribution
+
+If you use **AI Blackhole Director Skill** in your project, crediting **AIBlackhole** and linking back to this repository is appreciated.
