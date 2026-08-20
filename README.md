@@ -125,3 +125,7 @@ For Claude Code:
 python aiblackhole-director-cc/scripts/local_import.py
 ```
 
+## License
+
+This project is licensed under the MIT License.
+Copyright (c) 2026 AIBlackhole.
